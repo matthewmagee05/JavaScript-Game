@@ -23,11 +23,10 @@ var Engine = (function(global) {
         win = global.window,
         canvas = doc.createElement('canvas'),
         ctx = canvas.getContext('2d'),
-        lastTime;
         bgwidth = 7200,
         bgposition1 = 0,
         bgposition2 = 8000,
-        audio3 = new Audio('applause.wav');
+        audio3 = new Audio('applause.wav'),
         lastTime = Date.now();
 
     canvas.width = 800;

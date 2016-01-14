@@ -34,7 +34,7 @@ function CanvasEdge() {
     this.boxDown = this.y + this.halfBoxHeight;
     this.boxLeft = this.x - this.halfBoxWidth;
     this.boxRight = this.x + this.halfBoxWidth;
-}
+};
 
 // This listins for the key presses, and passes them to the handleInput method.
 document.addEventListener('keyup', function(e) {
@@ -82,9 +82,9 @@ var Player = function() {
 
 // This draws the player, as well as the players score on the canvas.
 Player.prototype.render = function() {
-   ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-   ctx.font = '30pt Impact';
-   ctx.fillText('Score' + ' ' + this.score, 30, 50);
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    ctx.font = '30pt Impact';
+    ctx.fillText('Score' + ' ' + this.score, 30, 50);
 };
 
 // This moves the player.
@@ -94,7 +94,7 @@ Player.prototype.handleInput = function(keyDown) {
         case 'up':
             if (this.y <= this.gameTopEdge) {
                 up = true;
-                player.updateScore();
+                this.updateScore();
             } else {
                 this.y -= 50;
             }
@@ -126,13 +126,13 @@ Player.prototype.handleInput = function(keyDown) {
 
 };
 // Updates the player score and health bar.
-Player.prototype.updateScore = function() {
+Player.prototype.updateScore = function(){
     
     ctx.clearRect(0, 0, 500, 500);
     //If the player reaches the top of the screen, update the score.
     if (up === true) {
         this.score = this.score + 10;
-        if(this.score % 100 ==0){
+        if(this.score % 100 === 0){
             audio4.play();
         }
         audio2.play();
@@ -232,13 +232,13 @@ for (var i = 0; i < 4; i++) {
 // Creates a health bar on screen.
 var Score = function(){
     this.sprite = 'images/healthBar/fullHealth.png';
-}
+};
 // Renders the Health percentage for the player.
 Score.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), 550, 5);
     ctx.font = '18pt Impact';
     ctx.fillText('Health: ' + ' ' + health + '%', 580, 50);
-}
+};
 
 // Creates a player character and health bar.
 var player = new Player();
