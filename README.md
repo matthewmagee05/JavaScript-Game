@@ -10,8 +10,6 @@ Get your people to safety!
 
 `git clone https://github.com/matthewmagee05/JavaScript-Game.git`
 
-
-For detailed instructions on how to get started, check out this [guide](https://docs.google.com/document/d/1v01aScPjSWCCWQLIpFqvg3-vXLH2e8_SZQKC8jNO0Dc/pub?embedded=true).
 ## How to Play
 
 Once the game is installed, open the `index.html` file in your favorite web browser. 
