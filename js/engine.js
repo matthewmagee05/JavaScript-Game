@@ -27,6 +27,7 @@ var Engine = (function(global) {
         bgwidth = 7200,
         bgposition1 = 0,
         bgposition2 = 8000,
+        audio3 = new Audio('applause.wav');
         lastTime = Date.now();
 
     canvas.width = 800;
@@ -44,11 +45,10 @@ var Engine = (function(global) {
          * computer is) - hurray time!
          */
         var now = Date.now(),
-            dt = (now - lastTime) / 1000.0;
-            bgposition1 += -1000*dt;
-        bgposition2 += -1000*dt;
+                  dt = (now - lastTime) / 1000.0;
+                  bgposition1 += -1000 * dt;
+        bgposition2 += -1000 * dt;
         renderBackground();
-
 
         /* Call our update/render functions, pass along the time delta to
          * our update function since it may be used for smooth animation.
@@ -56,14 +56,14 @@ var Engine = (function(global) {
         update(dt);
         render();
 
+        // Start game over screen if the players health drops below 25.
+        if(health < 25){
+            game_over();
+        }
         /* Set our lastTime variable which is used to determine the time delta
          * for the next time this function is called.
          */
         lastTime = now;
-
-        /* Use the browser's requestAnimationFrame function to call this
-         * function again as soon as the browser is able to draw another frame.
-         */
         win.requestAnimationFrame(main);
     }
 
@@ -72,7 +72,6 @@ var Engine = (function(global) {
      * game loop.
      */
     function init() {
-        reset();
         lastTime = Date.now();
         main();
     }
@@ -88,7 +87,6 @@ var Engine = (function(global) {
      */
     function update(dt) {
         updateEntities(dt);
-        // checkCollisions();
     }
 
     /* This is called by the update function and loops through all of the
@@ -102,7 +100,6 @@ var Engine = (function(global) {
         allEnemies.forEach(function(enemy) {
             enemy.update(dt);
         });
-        gem.update();
     }
 
     /* This function initially draws the "game level", it will then call
@@ -112,38 +109,26 @@ var Engine = (function(global) {
      * they are just drawing the entire screen over and over.
      */
     function render() {
-        /* This array holds the relative URL to the image used
-         * for that particular row of the game level.
-         */
+        // Load the background.  If you wanted multiple backgrounds, you
+        // could store images in different indexes of the array.
         var rowImages = [
-                   // Row 1 of 2 of grass
-                'images/view.png'    // Row 2 of 2 of grass
+                'images/view.png' 
             ]
-
-        /* Loop through the number of rows and columns we've defined above
-         * and, using the rowImages array, draw the correct image for that
-         * portion of the "grid"
-         */
-        /* var a = false;
-        var vx = 0;
-                //ctx.drawImage(Resources.get(rowImages[0]), 2,2);
-                
-                ctx.drawImage(Resources.get(rowImages[0]), vx, 50);
-                ctx.drawImage(Resources.get(rowImages[0]), Resources.get(rowImages[0]).width-Math.abs(vx), 50);
-                 
-                if (Math.abs(vx) > Resources.get(rowImages[0]).width) {
-                    vx = 0;
-                }
-                 
-                vx -= 2;*/
-            
-                            
-        
- renderBackground();
-               
-
+        renderBackground();
         renderEntities();
     }
+
+    // This function renders the entities created in the app.js.
+    function renderEntities() {
+        // Render each enemy stored in the array.
+        allEnemies.forEach(function(enemy) {
+            enemy.render();
+        });
+        //Render the player and health.
+        player.render();
+        score.render();
+    }
+    // This function renders the background.
     function renderBackground() {
       
     if (bgposition1 <= -bgwidth) {
@@ -152,37 +137,59 @@ var Engine = (function(global) {
         ctx.drawImage(Resources.get('images/view.png'), bgposition1, 0);
     };
 
-    /* This function is called by the render function and is called on each game
-     * tick. Its purpose is to then call the render functions you have defined
-     * on your enemy and player entities within app.js
-     */
-    function renderEntities() {
-        /* Loop through all of the objects within the allEnemies array and call
-         * the render function you have defined.
-         */
-        allEnemies.forEach(function(enemy) {
-            enemy.render();
-        });
-        player.render();
+    // This function determines if the player has pressed the enter key to start a new game.
+    var Over = function(){
+      document.addEventListener('keydown', function(e) {
+          var allowedKeys = {
+        13: 'enter'
+    };
+   
+        handleInput(allowedKeys[e.keyCode]);
+      });
+    }
+    // This function starts the game over screen once the players health has dropped
+    // below 25.
+    function game_over() {
+        renderBackground();
+        // Font size and type
+        ctx.font = "36pt Impact"; 
+        // Font color
+        ctx.fillStyle = "red";
+        // Display the text and set the coordinates.
+        ctx.fillText("Game Over!", 240, 250);
+        // Draw the outline of the text
+        ctx.strokeStyle = "black";
+        ctx.lineWidth = "3";
+        ctx.strokeText("Game Over!", 240, 250);
+        ctx.fillText("Please press ENTER to play again", 110, 350);
+        ctx.strokeText("Please press ENTER to play again", 110, 350);
+        // Play applause sound.
+        audio3.play();
+        // Determine if the player has pressed enter to start a new game.
+        Over();
+    };
+
+    handleInput = function(keyDown) {
+    // Reload the screen if enter was pressed.
+    switch (keyDown) {
+        case 'enter':
+               window.location.reload();
+            break;
+        default:
+            return null;
     }
 
-    /* This function does nothing but it could have been a good place to
-     * handle game reset states - maybe a new game menu or a game over screen
-     * those sorts of things. It's only called once by the init() method.
-     */
-    function reset() {
-        // noop
-    }
-
-    /* Go ahead and load all of the images we know we're going to need to
-     * draw our game level. Then set init as the callback method, so that when
-     * all of these images are properly loaded our game will start.
-     */
+};
+// Load the images used in the game.
     Resources.load([
  
-       'images/view.png',
+        'images/view.png',
         'images/enemyShip.png',
-        'images/space.png'
+        'images/space.png',
+        'images/healthBar/fullHealth.png',
+        'images/healthBar/almostFull.png',
+        'images/healthBar/halfHealth.png',
+        'images/healthBar/lastHealth.png',
     ]);
     Resources.onReady(init);
 
